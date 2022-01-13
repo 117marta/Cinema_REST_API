@@ -15,3 +15,15 @@ class Movie(models.Model):
     director = models.ForeignKey(Person, on_delete=models.CASCADE, related_name='movies_directed')
     year = models.SmallIntegerField()
     actor = models.ManyToManyField(Person, related_name='movies_cast')
+
+
+class Cinema(models.Model):
+    name = models.CharField(max_length=150)
+    city = models.CharField(max_length=100)
+    movies = models.ManyToManyField(Movie, through='Screening')  # łączy kino z filmem
+
+
+class Screening(models.Model):  # łączy kina z filmami + data seansu
+    cinema = models.ForeignKey(Cinema, on_delete=models.CASCADE)
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
+    date = models.DateTimeField()
