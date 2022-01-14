@@ -6,13 +6,17 @@ class Person(models.Model):
     last_name = models.CharField(max_length=50)
 
     def __str__(self):
-        return self.name + self.last_name
+        return self.first_name + ' ' + self.last_name
+
+    @property
+    def full_name(self):
+        return self.first_name + ' ' + self.last_name
 
 
 class Movie(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
-    director = models.ForeignKey(Person, on_delete=models.CASCADE, related_name='movies_directed')
+    director = models.ForeignKey(Person, on_delete=models.CASCADE, related_name='movies_directed', null=True)
     year = models.SmallIntegerField()
     actor = models.ManyToManyField(Person, related_name='movies_cast')
 

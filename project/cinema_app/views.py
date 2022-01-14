@@ -8,7 +8,7 @@ from .serializers import MovieSerializer
 
 
 class MovieListView(generics.ListCreateAPIView):
-    queryset = Movie.objects.all()
+    queryset = Movie.objects.all().order_by('year')
     serializer_class = MovieSerializer
 
 
