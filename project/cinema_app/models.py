@@ -34,3 +34,6 @@ class Screening(models.Model):  # łączy kina z filmami + data seansu
     cinema = models.ForeignKey(Cinema, on_delete=models.CASCADE)
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
     date = models.DateTimeField()
+
+    class Meta:
+        ordering = ['cinema__name', 'movie__title', 'date']

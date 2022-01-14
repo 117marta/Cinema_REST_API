@@ -11,7 +11,7 @@ class Command(BaseCommand):
         residentevil = Movie.objects.get(id=7)
 
 
-        # MOVIES
+        # MOVIES (wiele:1)
         CF = Person.objects.get(id=3)
         notimetodie.director = CF
         notimetodie.save()
@@ -23,7 +23,7 @@ class Command(BaseCommand):
         forrestgump.save()
 
 
-        # ACTORS
+        # ACTORS (wiele:wiele)
         DC = Person.objects.get(id=2)
         TH = Person.objects.get(id=6)
         LS = Person.objects.get(id=10)

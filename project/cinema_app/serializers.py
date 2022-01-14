@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Person, Movie, Cinema
+from .models import Person, Movie, Cinema, Screening
 
 
 # Serializacja danych z modelu do JSONa
@@ -33,9 +33,25 @@ class CinemaSerializer(serializers.ModelSerializer):
     movies = serializers.HyperlinkedRelatedField(  # filmy jako linki (a nie jako klucze główne - id)
         many=True,  # kina i filmy połączone są relacją wiele:wielu
         read_only=True,
-        view_name='movies-detail',
+        view_name='movies-detail',  # w URL 'name=...', żeby przenosiło do szczegółów Movie/pk
     )
 
     class Meta:  # w tej podklasie definiujemy model, który będzie serializowany przez serializator + pola
         model = Cinema
         fields = ['name', 'city', 'movies']
+
+
+# Serializator seansu
+class ScreeningSerializer(serializers.ModelSerializer):
+    cinema = serializers.SlugRelatedField(
+        queryset=Cinema.objects.all(),
+        slug_field='name',
+    )
+    movie = serializers.SlugRelatedField(
+        queryset=Movie.objects.all(),
+        slug_field='title',
+    )
+
+    class Meta:
+        model = Screening
+        exclude = ['id']
