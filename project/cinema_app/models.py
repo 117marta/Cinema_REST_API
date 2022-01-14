@@ -20,6 +20,9 @@ class Movie(models.Model):
     year = models.SmallIntegerField()
     actor = models.ManyToManyField(Person, related_name='movies_cast')
 
+    def __str__(self):
+        return self.title
+
 
 class Cinema(models.Model):
     name = models.CharField(max_length=150)
