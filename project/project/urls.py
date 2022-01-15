@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from cinema_app.views import MovieListView, MovieView, CinemaListView, CinemaView, ScreeningListView, ScreeningView
+from django.urls import include
 
 
 urlpatterns = [
@@ -26,4 +27,5 @@ urlpatterns = [
     path('cinemas/<int:pk>/', CinemaView.as_view()),
     path('screenings/', ScreeningListView.as_view()),
     path('screenings/<int:pk>', ScreeningView.as_view()),
+    path('api-auth/', include('rest_framework.urls')),  # logowanie
 ]
