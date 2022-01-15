@@ -125,3 +125,11 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 'DEFAULT_PAGINATION_CLASS': 'cinema_app.pagination.CustomPagination',  # własne nazwy pól
+    'PAGE_SIZE': 4,
+    'DATETIME_FORMAT': "%Y-%m-%d %H:%M",
+}
