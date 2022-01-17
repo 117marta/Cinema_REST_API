@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics
 from .models import Movie, Cinema, Screening
-from .serializers import MovieSerializer, CinemaSerializer, ScreeningSerializer, RegisterSerializer
+from .serializers import MovieSerializer, CinemaSerializer, ScreeningSerializer, RegisterSerializer, UserSerializer
 from rest_framework import permissions
 from django.contrib.auth.models import User
 
@@ -52,3 +52,16 @@ class ScreeningView(generics.RetrieveUpdateDestroyAPIView):
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
+
+
+# Widoki użytkownika
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all().order_by('-date_joined')
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class UserView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAdminUser]

@@ -21,7 +21,9 @@ from cinema_app.views import (MovieListView,
                               CinemaView,
                               ScreeningListView,
                               ScreeningView,
-                              RegisterView)
+                              RegisterView,
+                              UserListView,
+                              UserView)
 from django.urls import include
 
 
@@ -35,5 +37,6 @@ urlpatterns = [
     path('screenings/<int:pk>', ScreeningView.as_view()),
     path('api-auth/', include('rest_framework.urls')),  # logowanie
     path('register/', RegisterView.as_view(), name='auth-register'),
-
+    path('users/', UserListView.as_view()),
+    path('users/<int:pk>/', UserView.as_view(), name='user-detail'),
 ]

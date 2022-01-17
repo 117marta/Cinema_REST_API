@@ -101,3 +101,21 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+
+# Serializator użytkownika
+class UserSerializer(serializers.ModelSerializer):
+    id = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='user-detail'
+    )
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'date_joined', 'groups', 'user_permissions']
+        extra_kwargs = {
+            'username': {'read_only': True},  # serializacja: tak; modyfikacja: nie
+            'date_joined': {'read_only': True},
+            'groups': {'write_only': True},  # serializacja: nie; modyfikacja: tak
+            'user_permissions': {'write_only': True},
+        }
