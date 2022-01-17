@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from rest_framework import generics
 from .models import Movie, Cinema, Screening
-from .serializers import MovieSerializer, CinemaSerializer, ScreeningSerializer
+from .serializers import MovieSerializer, CinemaSerializer, ScreeningSerializer, RegisterSerializer
 from rest_framework import permissions
+from django.contrib.auth.models import User
 
 
 # APIView zwracają obiekt klasy Response, który automatycznie zwróci dane w postaci JSON
@@ -45,3 +46,9 @@ class ScreeningView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Screening.objects.all()
     serializer_class = ScreeningSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+
+# Rejestracja użytkownika
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = RegisterSerializer

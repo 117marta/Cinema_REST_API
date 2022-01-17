@@ -15,7 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from cinema_app.views import MovieListView, MovieView, CinemaListView, CinemaView, ScreeningListView, ScreeningView
+from cinema_app.views import (MovieListView,
+                              MovieView,
+                              CinemaListView,
+                              CinemaView,
+                              ScreeningListView,
+                              ScreeningView,
+                              RegisterView)
 from django.urls import include
 
 
@@ -28,4 +34,6 @@ urlpatterns = [
     path('screenings/', ScreeningListView.as_view()),
     path('screenings/<int:pk>', ScreeningView.as_view()),
     path('api-auth/', include('rest_framework.urls')),  # logowanie
+    path('register/', RegisterView.as_view(), name='auth-register'),
+
 ]

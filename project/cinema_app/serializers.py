@@ -1,5 +1,8 @@
 from rest_framework import serializers
 from .models import Person, Movie, Cinema, Screening
+from rest_framework.validators import UniqueValidator
+from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 
 
 # Serializacja danych z modelu do JSONa
@@ -55,3 +58,46 @@ class ScreeningSerializer(serializers.ModelSerializer):
     class Meta:
         model = Screening
         exclude = ['id']
+
+
+# Rejestracja nowego użytkownika
+class RegisterSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())],
+    )
+    password = serializers.CharField(
+        write_only=True,  # to pole pojawia się przy tworzeniu/modyfikacji użytkownika. Nie ma go w serializacji
+        required=True,
+        validators=[validate_password],
+        style={'input_type': 'password', 'placeholder': 'Input Password'}
+    )
+    password2 = serializers.CharField(
+        write_only=True,
+        required=True,
+        style={'input_type': 'password', 'placeholder': 'Confirm Password'}
+    )
+
+    class Meta:
+        model = User
+        fields = ['username', 'password', 'password2', 'first_name', 'last_name', 'email']
+        extra_kwargs = {
+            'first_name': {'required': True, 'allow_blank': False},
+            'last_name': {'required': True, 'allow_blank': False},
+        }
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError({'password': 'Password fields must be the same!'})
+        return attrs
+
+    def create(self, validated_data):
+        user = User.objects.create(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
+        )
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
