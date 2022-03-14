@@ -9,21 +9,15 @@ from django.contrib.auth.password_validation import validate_password
 
 
 class MovieSerializer(serializers.ModelSerializer):
-    # actor = serializers.HyperlinkedRelatedField(
-    #     many=True,
-    #     # read_only=True,
-    #     queryset=Person.objects.all(),
-    #     view_name='movies-detail',
-    # )
 
     actor = serializers.SlugRelatedField(
         many=True,
         queryset=Person.objects.all(),
-        slug_field='full_name',
+        slug_field='name',
     )
     director = serializers.SlugRelatedField(
         queryset=Person.objects.all(),
-        slug_field='full_name',
+        slug_field='name',
     )
 
     class Meta:
