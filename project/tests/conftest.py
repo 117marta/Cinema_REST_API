@@ -1,7 +1,7 @@
 from cinema_app.models import Person, Movie
 import pytest
 from rest_framework.test import APIClient
-from .utils import faker, create_fake_movie
+from .utils import faker, create_fake_movie, create_fake_cinema
 
 
 # Fikstura zwracająca klienta API
@@ -18,3 +18,5 @@ def set_up():
         Person.objects.create(name=faker.name())
     for _ in range(10):
         create_fake_movie()
+    for _ in range(5):
+        create_fake_cinema()

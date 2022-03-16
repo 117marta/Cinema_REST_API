@@ -1,8 +1,11 @@
 from random import sample, choice, randint
-from cinema_app.models import Person, Movie
+from cinema_app.models import Person, Movie, Cinema, Screening
 from faker import Faker
+import pytz
+from project.settings import TIME_ZONE
 
 faker = Faker('pl_PL')
+TZ = pytz.timezone(TIME_ZONE)
 
 
 # Zwraca losowy obiekt Person z bazy danych
@@ -40,3 +43,33 @@ def create_fake_movie():
     new_movie = Movie.objects.create(**movie_data)
     for a in actors:
         new_movie.actor.add(find_person_by_name(a))
+
+
+########################################################################################################################
+
+
+# Zwraca 3 losowe kina z bazy danych
+def random_movies():
+    movies = list(Movie.objects.all())
+    return sample(movies, 3)  # lista 3 kin
+
+
+# Tworzy fake dane dla kina
+def fake_cinema_data():
+    return {
+        'name': f'Kino {faker.street_name()}',
+        'city': faker.city(),
+    }
+
+
+# Dodaje seanse dla konkretnego kina
+def add_screenings(cinema):
+    movies = random_movies()
+    for m in movies:
+        Screening.objects.create(cinema=cinema, movie=m, date=faker.date_time(tzinfo=TZ))
+
+
+# Tworzy fake kino z fake seansami
+def create_fake_cinema():
+    cinema = Cinema.objects.create(**fake_cinema_data())
+    add_screenings(cinema)
