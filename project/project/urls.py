@@ -34,7 +34,7 @@ urlpatterns = [
     path('cinemas/', CinemaListView.as_view()),
     path('cinemas/<int:pk>/', CinemaView.as_view()),
     path('screenings/', ScreeningListView.as_view()),
-    path('screenings/<int:pk>', ScreeningView.as_view()),
+    path('screenings/<int:pk>/', ScreeningView.as_view()),
     path('api-auth/', include('rest_framework.urls')),  # logowanie
     path('register/', RegisterView.as_view(), name='auth-register'),
     path('users/', UserListView.as_view()),
