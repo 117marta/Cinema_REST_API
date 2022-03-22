@@ -20,3 +20,17 @@ def set_up():
         create_fake_movie()
     for _ in range(5):
         create_fake_cinema()
+
+
+# Fikstura tworząca użytkownika
+@pytest.fixture()
+def register_user():
+    u = {
+        'username': faker.email().split('@')[0],
+        'email': faker.email(),
+        'password': '!@#PASSword123',
+        'password2': '!@#PASSword123',
+        'first_name': faker.first_name(),
+        'last_name': faker.last_name(),
+    }
+    return u

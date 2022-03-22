@@ -110,7 +110,6 @@ def test_add_cinema(client, set_up):
 # GET method - wyświetlenie listy kin
 @pytest.mark.django_db
 def test_get_cinema_list(client, set_up):
-
     response = client.get('/cinemas/', {}, format='json')
     assert response.status_code == 200  # OK
     assert Cinema.objects.count() == response.data['count']
@@ -255,3 +254,51 @@ def test_update_screening(client, set_up):
     screening_obj = Screening.objects.get(pk=screening.pk)
     assert screening_obj.cinema == new_cinema  # czy zmieniło się kino dla seansu
     assert screening_obj.movie == new_movie  # czy zmienił się film dla seansu
+
+
+########################################################################################################################
+
+
+# Rejestracja
+@pytest.mark.django_db
+def test_register_user_fail(client):
+    response = client.post(path='/register/', data={}, format='json')
+    assert response.status_code == 400  # no data
+
+
+@pytest.mark.django_db
+def test_register_user_pass(client, register_user):
+    response = client.post(path='/register/', data=register_user, format='json')
+    assert response.status_code == 201  # created
+    assert response.data['username'] == register_user['username']
+    assert response.data['email'] == register_user['email']
+    assert response.data['first_name'] == register_user['first_name']
+    assert response.data['last_name'] == register_user['last_name']
+    assert "password" not in response.data
+    assert "password2" not in response.data
+
+    response = client.post(path='/register/', data=register_user, format='json')
+    assert response.status_code == 400  # user already exists
+
+
+# Logowanie
+@pytest.mark.django_db
+def test_login_user_pass(client, register_user):
+    user_before = User.objects.count()
+    response = client.post(path='/register/', data=register_user, format='json')
+    assert User.objects.count() == user_before + 1
+
+    # print(response.data)  # {'username': 'kazimierzczesak', 'first_name': 'Janina', 'last_name': 'Dybiec', 'email': 'syczgaja@example.net'}
+
+    username = response.data['username']
+    user = User.objects.get(username=username)
+    client.login(username=user.username, password=user.password)
+    resp = client.post(path='/api-auth/login/')
+    # resp = client.post(path='/api-auth/login/', data=register_user, format='json')
+    assert resp.status_code == 200
+
+
+# Wylogowanie
+def test_logout_user(client):
+    response = client.post(path='/api-auth/logout/', data={}, format='json')
+    assert response.status_code == 200
