@@ -262,13 +262,17 @@ def test_update_screening(client, set_up):
 # Rejestracja
 @pytest.mark.django_db
 def test_register_user_fail(client):
+    user_before = User.objects.count()
     response = client.post(path='/register/', data={}, format='json')
     assert response.status_code == 400  # no data
+    assert User.objects.count() == user_before
 
 
 @pytest.mark.django_db
 def test_register_user_pass(client, register_user):
+    user_before = User.objects.count()
     response = client.post(path='/register/', data=register_user, format='json')
+    assert User.objects.count() == user_before + 1
     assert response.status_code == 201  # created
     assert response.data['username'] == register_user['username']
     assert response.data['email'] == register_user['email']
@@ -277,28 +281,26 @@ def test_register_user_pass(client, register_user):
     assert "password" not in response.data
     assert "password2" not in response.data
 
+    user_before = User.objects.count()
     response = client.post(path='/register/', data=register_user, format='json')
     assert response.status_code == 400  # user already exists
+    assert User.objects.count() == user_before
 
 
 # Logowanie
 @pytest.mark.django_db
-def test_login_user_pass(client, register_user):
-    user_before = User.objects.count()
-    response = client.post(path='/register/', data=register_user, format='json')
-    assert User.objects.count() == user_before + 1
+def test_login_user(client, login_user):
+    login_pass = client.login(username=login_user.username, password='pass1')
+    assert login_pass is True
 
-    # print(response.data)  # {'username': 'kazimierzczesak', 'first_name': 'Janina', 'last_name': 'Dybiec', 'email': 'syczgaja@example.net'}
-
-    username = response.data['username']
-    user = User.objects.get(username=username)
-    client.login(username=user.username, password=user.password)
-    resp = client.post(path='/api-auth/login/')
-    # resp = client.post(path='/api-auth/login/', data=register_user, format='json')
-    assert resp.status_code == 200
+    response = client.post(path='/api-auth/login/')
+    assert response.status_code == 200
 
 
 # Wylogowanie
-def test_logout_user(client):
-    response = client.post(path='/api-auth/logout/', data={}, format='json')
+@pytest.mark.django_db
+def test_logout_user(client, login_user):
+    client.login(username=login_user.username, password='pass1')
+    client.logout()
+    response = client.post(path='/api-auth/logout/')
     assert response.status_code == 200

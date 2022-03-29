@@ -2,6 +2,7 @@ from cinema_app.models import Person, Movie
 import pytest
 from rest_framework.test import APIClient
 from .utils import faker, create_fake_movie, create_fake_cinema
+from django.contrib.auth.models import User
 
 
 # Fikstura zwracająca klienta API
@@ -34,3 +35,16 @@ def register_user():
         'last_name': faker.last_name(),
     }
     return u
+
+
+# Fikstura tworząca użytkownika
+@pytest.fixture()
+def login_user():
+    user = User.objects.create_user(
+        username='jan_kowalski',
+        password='pass1',
+        email='jan@email.com',
+        first_name='Jan',
+        last_name='Kowalski',
+    )
+    return user
