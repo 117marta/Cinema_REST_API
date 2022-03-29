@@ -304,3 +304,101 @@ def test_logout_user(client, login_user):
     client.logout()
     response = client.post(path='/api-auth/logout/')
     assert response.status_code == 200
+
+
+########################################################################################################################
+
+
+# GET method - lista użytkowników
+@pytest.mark.django_db
+def test_get_users(client, login_user):
+    response = client.get(path='/users/', data={}, format='json')
+    assert response.status_code == 403  # forbidden
+
+    client.login(username=login_user.username, password='pass1')
+    response = client.get(path='/users/', data={}, format='json')
+    assert response.status_code == 200  # OK
+    assert User.objects.count() == response.data['count']
+
+
+# POST method - dodanie nowego użytkownika
+@pytest.mark.django_db
+def test_post_user(client, register_user):
+    response = client.post('/users/', data=register_user, format='json')
+    assert response.status_code == 403  # forbidden
+
+    user = User.objects.create(username='test')
+    client.force_authenticate(user)
+    response = client.post('/users/', data=register_user, format='json')
+    assert response.status_code == 405  # not allowed
+
+
+# GET method - szczegóły danego użytkownika
+@pytest.mark.django_db
+def test_get_user(client, admin_client):
+    user = User.objects.first()
+    response = client.get(path=f'/users/{user.pk}/', data={}, format='json')  # bez logowania
+    assert response.status_code == 403  # forbidden
+
+    user = User.objects.create(username='test')
+    client.force_authenticate(user)
+    response = client.get(path=f'/users/{user.pk}/', data={}, format='json')  # logowanie jako uwierzytelniony użytkownik
+    assert response.status_code == 403  # forbidden
+
+    response = admin_client.get(path=f'/users/{user.pk}/', data={}, format='json')  # logowanie jako admin
+    assert response.status_code == 200  # OK
+
+    for field in ['id', 'username', 'first_name', 'last_name', 'email', 'date_joined']:
+        assert field in response.data
+
+
+# DELETE method - usunięcie użytkownika
+@pytest.mark.django_db
+def test_delete_user(client, login_user, admin_client):
+    user = User.objects.first()
+    response = client.delete(f'/users/{user.pk}/', data={}, format='json')
+    assert response.status_code == 403  # forbidden
+
+    client.force_authenticate(user)
+    response = client.delete(f'/users/{user.pk}/', data={}, format='json')
+    assert response.status_code == 403  # forbidden
+
+    response = admin_client.delete(f'/users/{user.pk}/', data={}, format='json')
+    assert response.status_code == 204  # no content
+
+    users_id = [u.pk for u in User.objects.all()]
+    assert user.pk not in users_id
+
+
+# PUT method - aktualizacja użytkownika
+@pytest.mark.django_db
+def test_update_user(client, login_user, admin_client):
+    user = User.objects.first()
+    response = admin_client.get(path=f'/users/{user.pk}/', data={}, format='json')
+    assert response.status_code == 200  # OK
+
+    # print(response.data)  # {'id': 'http://testserver/users/19/', 'username': 'jan_kowalski', 'first_name': 'Jan', 'last_name': 'Kowalski', 'email': 'jan@email.com', 'date_joined': '2022-03-29 18:19'}
+
+    user_data = response.data
+    new_username = 'grzegorz_nowak'
+    user_data['username'] = new_username
+    new_firstname = 'Grzegorz'
+    user_data['first_name'] = new_firstname
+    new_lastname = 'Nowak'
+    user_data['last_name'] = new_lastname
+    new_email = 'grzegorz@mail.pl'
+    user_data['email'] = new_email
+    response = admin_client.patch(
+        path=f'/users/{user.pk}/',
+        data=user_data, format='json',
+        content_type='application/json',  # inaczej wywala błąd 415
+    )
+    assert response.status_code == 200
+
+    # print(response.data)  # {'id': 'http://testserver/users/19/', 'username': 'jan_kowalski', 'first_name': 'Grzegorz', 'last_name': 'Nowak', 'email': 'grzegorz@mail.pl', 'date_joined': '2022-03-29 19:55'}
+
+    user_obj = User.objects.get(pk=user.pk)
+    assert user_obj.username == 'jan_kowalski'  # niezmienione
+    assert user_obj.first_name == new_firstname  # zmienione
+    assert user_obj.last_name == new_lastname  # zmienione
+    assert user_obj.email == new_email  # zmienione
