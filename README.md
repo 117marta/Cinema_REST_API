@@ -10,6 +10,7 @@ Application for management cinema using REST API.
 * [Setup](#setup)
 * [Usage](#usage)
 * [Project Status](#project-status)
+* [Contact](#contact)
 
 
 ## General info
@@ -29,6 +30,9 @@ Project is created with:
 * Django version: 3.2.11
 * psycopg2-binary version: 2.9.3
 * djangorestframework version: 3.13.1
+* Faker version: 13.3.1
+* pytest version: 7.0.1
+* pytest-django version: 4.5.2
 
 
 ## Features
@@ -44,6 +48,7 @@ information about the cinema with the given id, method DELETE - deletes the cine
 * On the `/register/` page, you can register to application
 * On the `/user/` page, you can see a list of all users (only with Authenticated permission)
 * On the `/user/<id>` page, you can modify a specific user (only with Admin permission)
+* Written tests to test the operation of application (100% tests passed)
 
 
 ## Screenshots
@@ -54,15 +59,20 @@ information about the cinema with the given id, method DELETE - deletes the cine
 ### `/movies/<id>` page:
 ![Movies/id](project/cinema_app/images/movie_id.png)
 
-### `/movies/` page:
+### `/register/` page:
 ![Register](project/cinema_app/images/register.png)
 
 
 ## Setup
 Project requirements are in _requirements.txt_. <br>
 To get started:
-* `pip install -r requirements.txt`
-* `python manage.py migrate`
+```
+pip install -r requirements.txt
+```
+```
+python manage.py migrate
+```
+
 
 To populate database with data:
 * `python manage.py person`
@@ -72,7 +82,9 @@ To populate database with data:
 * `python manage.py relations`
 
 To run application:
-* `python manage.py runserver`
+```
+python manage.py runserver
+```
 
 
 ## Usage
@@ -85,3 +97,7 @@ to install its dependencies
 
 ## Project Status
 Project is _complete_.
+
+
+## Contact
+Created by 117marta - feel free to contact me!
